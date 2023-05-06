@@ -2,6 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from api import artists
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
@@ -41,4 +42,4 @@ def fetch(artist: str):
             fetch_link(link, artist)
 
 if __name__ == '__main__':
-    [fetch(artist) for artist in ['wilco', 'radiohead', 'lada-gaga', 'hendrix-jimi']]
+    [fetch(artist) for artist in artists]

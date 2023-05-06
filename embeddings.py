@@ -1,19 +1,6 @@
-import openai
 import os
-import pinecone
+from api import generate_embeddings, upsert_embeddings, artists
 from tqdm.auto import tqdm
-from dotenv import load_dotenv
-
-load_dotenv()
-
-openai.api_key = os.getenv('OPENAI_API_KEY')
-openai_model = os.getenv('OPENAI_EMBEDDING_MODEL')
-pinecone_api_key = os.getenv('PINECONE_API_KEY')
-pinecone_env = os.getenv('PINECONE_ENV')
-index_name = os.getenv('PINECONE_INDEX_NAME')
-
-pinecone.init(api_key=pinecone_api_key, environment=pinecone_env)
-index = pinecone.Index(index_name)
 
 lyrics = []
 
@@ -27,10 +14,6 @@ def fetch_lyrics(artist: str) -> list:
                 name = file_name.rstrip('-lyrics.txt')
                 lyrics.append((artist, name, text))
     return lyrics
-
-def generate_embeddings(text: str) -> list:
-    response = openai.Embedding.create(model=openai_model, input=text)
-    return response['data'][0]['embedding']
 
 def store_embeddings(artist: str, lyrics: list):
 
@@ -57,10 +40,9 @@ def store_embeddings(artist: str, lyrics: list):
         records = zip(ids, xc, metadatas)
         
         # upsert to Pinecone
-        index.upsert(vectors=records, namespace='lyrics')
+        upsert_embeddings(vectors=records, namespace='lyrics')
 
 if __name__ == '__main__':
-    #for artist in ['drake', 'wilco', 'radiohead', 'lady-gaga', 'hendrix-jimi']:
-    for artist in ['lady-gaga', 'hendrix-jimi']:
+    for artist in artists:
         lyrics = fetch_lyrics(artist)
         store_embeddings(artist, lyrics)

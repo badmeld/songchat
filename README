@@ -1,1 +1,3 @@
 A demo of using embeddings with ChatGPT.
+
+cp env.example to .env and put in your values.
