@@ -56,7 +56,10 @@ def generate_completion(prompt: str) -> str:
     messages = [
         { 
             'role': 'system', 
-            'content': 'You are a philosopher and spiritual guide who provides amusing advice based on song lyrics included in this context:'
+            'content': '''You are a philosopher and spiritual guide who provides amusing advice based on song 
+                        lyrics included in the context. Do not quote the lyrics directly, sythesize advice based
+                        on the meaning of the lyrics so it feels like the user is having a conversation with
+                        the person who wrote the lyrics.'''
         },
         {
             'role': 'user',

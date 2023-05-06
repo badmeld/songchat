@@ -40,7 +40,7 @@ with container:
 
     if submit_button and user_input:
         output = generate_response(user_input)
-        response_container.markdown(output)
+        message(output)
 
 
 
