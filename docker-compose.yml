@@ -2,29 +2,42 @@ version: '3.9'
 
 services:
   streamlit:
-    context: ./web
-    dockerfile: Dockerfile
-    image: python:3.9
-    command: sh -c "pip install streamlit && streamlit run chat.py"
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     volumes:
-      - ./web/chat.py:/app/chat.py
+      - ./chat.py:/app/chat.py
     ports:
       - "8501:8501"
     networks:
       - weaviate
 
   weaviate:
-    image: semi-technologies/weaviate:latest
-    context: ./db
-    dockerfile: Dockerfile
+    command:
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8080'
+    - --scheme
+    - http
+    image: semitechnologies/weaviate:1.19.0
+    ports:
+    - 8080:8080
+    restart: on-failure:0
+    environment:
+      SUM_INFERENCE_API: 'http://sum-transformers:8080'
+      OPENAI_APIKEY: $OPENAI_API_KEY
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-openai'
+      ENABLE_MODULES: 'text2vec-openai'
+      CLUSTER_HOSTNAME: 'node1'
     volumes:
       - ./db:/var/lib/weaviate
-    ports:
-      - "8080:8080"
     networks:
       - weaviate
 
 networks:
   weaviate:
     driver: bridge
-
